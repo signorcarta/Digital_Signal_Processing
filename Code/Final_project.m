@@ -14,7 +14,7 @@ N=fs*duration; % # samples on which the fft is computed
 K = 1/N*fftshift(fft(y(:,1),N)); % Computing fft and shifting to 0-frequency
 T = -fs/2:fs/N:fs/2-fs/N;% Creating the frequency axis
 
-% Plotting imput signal spectrum
+% Plotting input signal spectrum
 figure(1);
 plot(T,abs(K));
 grid
@@ -27,14 +27,14 @@ data_fft=fft(y);
 Y = fftshift(data_fft);
 powershift = (abs(Y).^2)/N;
 carrier=find(powershift>1000);
-fshift = (-N/2:N/2-1)*(fs/N);
-f1=fshift(carrier(3));
-f2=fshift(carrier(4));
+f_shift = (-N/2:N/2-1)*(fs/N);
+f1 = f_shift(carrier(3));
+f2 = f_shift(carrier(4));
 
 %% Carrier frequency amplitudes____________________________________________
-amplishift = (abs(Y))./N;
-A1=amplishift(carrier(3)); 
-A2=amplishift(carrier(4)); 
+ampli_shift = (abs(Y))./N;
+A1=ampli_shift(carrier(3)); 
+A2=ampli_shift(carrier(4)); 
 
 %% Extract carriers________________________________________________________
 % Extract carrier f1
@@ -46,12 +46,10 @@ delta_f1=delta_theta_3dB_f1/2;
 r=1-delta_f1;
 c_a1_f1=r*2*cos(theta0_f1);
 c_a2_f1=-r^2;
-c_b0_f1=(1-r)*2*sin(theta0_f1);
-%p=r*exp(j*theta0_f1); 
-%z=exp(j*theta0_f1); 
+c_b0_f1=(1-r)*2*sin(theta0_f1); 
 
 % Plotting notch filter related to carrier f1 
-figure(1);
+figure(2);
 freqz([c_b0_f1],[1 -c_a1_f1 -c_a2_f1]);
 title('Notch filter [carrier f1]'); % 
 y_carrierf1 = filter([c_b0_f1],[1 -c_a1_f1 -c_a2_f1], y);
@@ -63,12 +61,10 @@ delta_f2=delta_theta_3dB_f2/2;
 r=1-delta_f2;
 c_a1_f2=r*2*cos(theta0_f2);
 c_a2_f2=-r^2;
-c_b0_f2=(1-r)*2*sin(theta0_f2);
-%p=r*exp(j*theta0_f2); 
-%z=exp(j*theta0_f2); 
+c_b0_f2=(1-r)*2*sin(theta0_f2); 
 
 % Plotting notch filter related to carrier f2 
-figure(2);
+figure(3);
 freqz([c_b0_f2],[1 -c_a1_f2 -c_a2_f2]);
 title('Notch filter [carrier f2]');
 y_carrierf2 = filter([c_b0_f2],[1 -c_a1_f2 -c_a2_f2], y);
@@ -86,7 +82,7 @@ y_dem2=y.*y_carrierf2;
 b = firpm(n,fo,ao,w);
 
 % Plotting Low-Pass FIR filter frequency response 
-figure(3);
+figure(4);
 freqz(b,1);
 title('Low-pass FIR filter');
 
@@ -108,7 +104,7 @@ a1_notch=2*r_notch*cos(theta0_notch);
 a2_notch=-r_notch^2;
 
 % Plotting High-pass notch IIR filter frequency response
-figure(4);
+figure(5);
 freqz([1 b1_notch 1],[1 -a1_notch -a2_notch]);
 title('High-pass notch IIR filter');
 
@@ -121,7 +117,7 @@ Y = 1/N*fftshift(fft(y_final1(:,1),N));
 F = -fs/2:fs/N:fs/2-fs/N;
 
 % Plotting spectrum of the demodulated and filtered signal
-figure(5);
+figure(6);
 plot(F,abs(Y));
 grid
 xlabel('frequency[Hz]');
@@ -133,7 +129,7 @@ Y = 1/N*fftshift(fft(y_final2(:,1),N));
 F = -fs/2:fs/N:fs/2-fs/N;
 
 % Plotting spectrum of the demodulated and filtered signal
-figure(6);
+figure(7);
 plot(F,abs(Y));
 grid
 xlabel('frequency[Hz]');
@@ -144,5 +140,5 @@ title('Spectrum of the demodulated and filtered signal 2');
 y_final1=y_final1.*10; % Amplifying the signal to get it louder
 y_final2=y_final2.*10; % Amplifying the signal to get it louder
 yfinal=[y_final1(:),y_final2(:)];
-audiowrite('signal_output.wav',yfinal,fs);
+audiowrite('clean_output.wav',yfinal,fs);
 
